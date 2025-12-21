@@ -1,0 +1,15 @@
+name: artifactory
+version: '1.0'
+main: io.github.ilykafae.artifactory.Artifactory
+api-version: '1.21'
+prefix: artifactory
+load: STARTUP
+authors: [ ilykafae ]
+description: artifacts frfr
+
+dependencies:
+  server:
+    cafelib:
+      load: BEFORE
+      required: true
+      join-classpath: true
