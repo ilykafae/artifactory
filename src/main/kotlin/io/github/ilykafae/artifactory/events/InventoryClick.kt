@@ -2,6 +2,7 @@ package io.github.ilykafae.artifactory.events
 
 import io.github.ilykafae.artifactory.Artifactory
 import io.github.ilykafae.artifactory.artifact.ArtifactHelper
+import io.github.ilykafae.artifactory.artifact.ArtifactHelper.getArtifact
 import io.github.ilykafae.artifactory.artifact.ArtifactHelper.isArtifact
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -17,37 +18,37 @@ internal class InventoryClick : Listener {
     fun onInventoryClick(event: InventoryClickEvent) {
         val plr = event.whoClicked as? Player ?: return
 
-        if (event.view.topInventory.type == InventoryType.ENDER_CHEST && !Artifactory.serverConfig.get().allowArtifactInEchest && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.ENDER_CHEST && !Artifactory.serverConfig.get().allowArtifactInEchest && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.SHULKER_BOX && !Artifactory.serverConfig.get().allowArtifactInShulker && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.SHULKER_BOX && !Artifactory.serverConfig.get().allowArtifactInShulker && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.CHEST && !Artifactory.serverConfig.get().allowArtifactInChest && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.CHEST && !Artifactory.serverConfig.get().allowArtifactInChest && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.BARREL && !Artifactory.serverConfig.get().allowArtifactInBarrel && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.BARREL && !Artifactory.serverConfig.get().allowArtifactInBarrel && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.HOPPER && !Artifactory.serverConfig.get().allowArtifactInHopper && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.HOPPER && !Artifactory.serverConfig.get().allowArtifactInHopper && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.DROPPER && !Artifactory.serverConfig.get().allowArtifactInDropper && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.DROPPER && !Artifactory.serverConfig.get().allowArtifactInDropper && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }
 
-        if (event.view.topInventory.type == InventoryType.DISPENSER && !Artifactory.serverConfig.get().allowArtifactInDispenser && event.currentItem.isArtifact()) {
+        if (event.view.topInventory.type == InventoryType.DISPENSER && !Artifactory.serverConfig.get().allowArtifactInDispenser && event.currentItem.isArtifact() && !Artifactory.serverConfig.get().ignoredArtifacts.contains(event.currentItem.getArtifact()!!.id)) {
             event.isCancelled = true
             return
         }

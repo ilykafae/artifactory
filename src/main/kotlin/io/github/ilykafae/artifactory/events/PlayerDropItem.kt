@@ -16,15 +16,10 @@ internal class PlayerDropItem : Listener {
     @EventHandler(priority = EventPriority.HIGH)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val plr: Player = event.player
-        val stack: ItemStack = event.itemDrop.itemStack
 
-        if (stack.isArtifact() && !Artifactory.serverConfig.get().allowArtifactDropping) {
-            event.isCancelled = true
-        } else {
-            Bukkit.getScheduler().runTask(Artifactory.plugin, Runnable {
-                ArtifactHelper.updateHand(plr, plr.inventory.itemInMainHand, plr.inventory.itemInOffHand)
-            })
-        }
+        Bukkit.getScheduler().runTask(Artifactory.plugin, Runnable {
+            ArtifactHelper.updateHand(plr, plr.inventory.itemInMainHand, plr.inventory.itemInOffHand)
+        })
     }
 
 }

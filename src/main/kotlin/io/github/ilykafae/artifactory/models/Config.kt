@@ -1,7 +1,6 @@
 package io.github.ilykafae.artifactory.models
 
-data class Config(
-    val allowArtifactDropping: Boolean = false,
+internal data class Config(
     val allowArtifactInEchest: Boolean = false,
     val allowArtifactInShulker: Boolean = false,
     val allowArtifactInChest: Boolean = false,
@@ -9,4 +8,8 @@ data class Config(
     val allowArtifactInHopper: Boolean = false,
     val allowArtifactInDropper: Boolean = false,
     val allowArtifactInDispenser: Boolean = false,
+
+    val ignoredArtifacts: MutableList<String> = mutableListOf(
+        "1_bill"
+    ),
 )

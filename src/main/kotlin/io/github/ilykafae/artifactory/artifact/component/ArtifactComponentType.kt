@@ -5,6 +5,7 @@ enum class ArtifactComponentType {
     NAME,
     LORE,
     PASSIVE,
-    ABILITY
+    ABILITY,
+    GLINT
 
 }

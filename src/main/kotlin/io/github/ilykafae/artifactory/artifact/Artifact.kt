@@ -50,6 +50,11 @@ abstract class Artifact(
         val meta = stack.itemMeta
 
         meta.persistentDataContainer.set(ArtifactRegistry.artifactIdentifer, PersistentDataType.STRING, this.id)
+
+        if (artifactComponentManager.getFirst(ArtifactComponentType.GLINT) != null) {
+            meta.setEnchantmentGlintOverride(true)
+        }
+
         stack.itemMeta = meta
 
         if (artifactComponentManager.getFirst(ArtifactComponentType.NAME) != null) {

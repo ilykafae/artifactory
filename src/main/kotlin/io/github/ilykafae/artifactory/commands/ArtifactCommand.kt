@@ -5,6 +5,7 @@ import io.github.ilykafae.artifactory.artifact.Artifact
 import io.github.ilykafae.artifactory.artifact.ArtifactHelper.getArtifact
 import io.github.ilykafae.artifactory.artifact.ArtifactRegistry
 import io.github.ilykafae.cafelib.libs.Helper.getPlainName
+import io.github.ilykafae.cafelib.libs.Helper.offer
 import io.papermc.paper.command.brigadier.BasicCommand
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -36,7 +37,7 @@ internal class ArtifactCommand : BasicCommand {
                             sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cInvalid artifact id: ${args[1]}")
                             return
                         } else {
-                            sender.give(art.getItemStack())
+                            sender.offer(art.getItemStack())
                             sender.sendMessage("${Artifactory.COMMAND_PREFIX} §fGave ${sender.name} ${art.getItemStack().getPlainName()}§f x 1")
                             return
                         }
@@ -52,7 +53,7 @@ internal class ArtifactCommand : BasicCommand {
                             return
                         } else {
                             if (args[2].toIntOrNull() != null) {
-                                sender.give(art.getItemStack(args[2].toInt()))
+                                sender.offer(art.getItemStack(args[2].toInt()))
                                 sender.sendMessage("${Artifactory.COMMAND_PREFIX} §fGave ${sender.name} ${art.getItemStack().getPlainName()}§f x ${args[2]}")
                             } else {
                                 sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cInvalid amount: ${args[2]}")
@@ -68,7 +69,7 @@ internal class ArtifactCommand : BasicCommand {
                         } else {
                             if (args[2].toIntOrNull() != null) {
                                 if (Bukkit.getPlayer(args[3]) != null) {
-                                    Bukkit.getPlayer(args[3])!!.give(art.getItemStack(args[2].toInt()))
+                                    Bukkit.getPlayer(args[3])!!.offer(art.getItemStack(args[2].toInt()))
                                     sender.sendMessage("${Artifactory.COMMAND_PREFIX} §fGave ${Bukkit.getPlayer(args[3])!!.name} ${art.getItemStack().getPlainName()}§f x ${args[2]}")
                                 } else {
                                     sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cCannot find player: ${args[3]}")
@@ -83,41 +84,15 @@ internal class ArtifactCommand : BasicCommand {
                     else -> return
                 }
             }
-            "transfer" -> {
-                if (args.size != 2) return
-                if (sender !is Player) {
-                    sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cThis can only be used by a player!")
-                    return
-                }
-
-                val art: Artifact? = sender.inventory.itemInMainHand.getArtifact()
-                if (art == null) {
-                    sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cYou are not holding an artifact!")
-                    return
-                }
-
-                if (Bukkit.getPlayer(args[1]) == null) {
-                    sender.sendMessage("${Artifactory.COMMAND_PREFIX} §cInvalid player: ${args[1]}")
-                    return
-                }
-
-                sender.inventory.remove(art.getItemStack(1))
-                Bukkit.getPlayer(args[1])!!.give(art.getItemStack(1))
-                sender.sendMessage("${Artifactory.COMMAND_PREFIX} §fTransferred ${art.getItemStack().getPlainName()} to ${args[1]}")
-                Bukkit.getPlayer(args[1])!!.sendMessage("${Artifactory.COMMAND_PREFIX} §f${sender.name} transferred ${art.getItemStack().getPlainName()} to you")
-                return
-            }
-            else -> return
         }
     }
 
     override fun suggest(stack: CommandSourceStack, args: Array<out String>): Collection<String> {
         when (args.size) {
-            1 -> return listOf("artifact", "transfer").filter { it.startsWith(args[0], ignoreCase = true) }
+            1 -> return listOf("artifact").filter { it.startsWith(args[0], ignoreCase = true) }
             2 -> {
                 return when (args[0]) {
                     "artifact" -> ArtifactRegistry.getRegisterArtifacts().filter { it.startsWith(args[1], ignoreCase = true) }
-                    "transfer" -> Bukkit.getOnlinePlayers().map { it.name }.filter { it.startsWith(args[1], ignoreCase = true) }
                     else -> emptyList()
                 }
             }
