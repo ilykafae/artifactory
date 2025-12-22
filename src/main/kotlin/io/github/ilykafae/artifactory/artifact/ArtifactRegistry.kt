@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType
 
 object ArtifactRegistry {
 
-    val artifactIdentifer = NamespacedKey(Artifactory.ID, "artiface_id")
+    val artifactIdentifer = NamespacedKey(Artifactory.ID, "artifact_id")
 
     private val logger: Logger = Logger(
         Artifactory.log,
@@ -34,6 +34,13 @@ object ArtifactRegistry {
      */
     fun getArtifact(id: String): Artifact? {
         return artifacts[id]
+    }
+
+    /**
+     * Get a list of all registered artifact ids
+     */
+    fun getRegisterArtifacts(): List<String> {
+        return artifacts.keys.toList()
     }
 
 }

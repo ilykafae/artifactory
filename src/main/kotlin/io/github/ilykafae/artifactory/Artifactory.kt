@@ -1,70 +1,48 @@
 package io.github.ilykafae.artifactory
 
-import io.github.ilykafae.artifactory.artifact.Artifact
-import io.github.ilykafae.artifactory.artifact.ArtifactRegistry
-import io.github.ilykafae.artifactory.artifact.component.ArtifactComponent
-import io.github.ilykafae.artifactory.artifact.component.ArtifactComponentType
-import io.github.ilykafae.artifactory.artifact.component.components.AbilityComponent
+import io.github.ilykafae.artifactory.artifact.ArtifactHelper
+import io.github.ilykafae.artifactory.commands.ArtifactCommand
+import io.github.ilykafae.artifactory.events.EntityPickupItem
+import io.github.ilykafae.artifactory.events.InventoryClick
+import io.github.ilykafae.artifactory.events.InventoryItemMove
+import io.github.ilykafae.artifactory.events.InventoryPickupItem
+import io.github.ilykafae.artifactory.events.PlayerDropItem
 import io.github.ilykafae.artifactory.events.PlayerInteract
+import io.github.ilykafae.artifactory.events.PlayerItemHeld
 import io.github.ilykafae.artifactory.events.PlayerJoin
 import io.github.ilykafae.artifactory.events.PlayerQuit
-import io.github.ilykafae.artifactory.models.ArtifactoryProfile
-import io.github.ilykafae.artifactory.models.ArtifactoryConfig
-import io.github.ilykafae.cafelib.libs.Helper.toTimeString
+import io.github.ilykafae.artifactory.events.PlayerRespawn
+import io.github.ilykafae.artifactory.events.PlayerSwapHands
+import io.github.ilykafae.artifactory.models.Profile
+import io.github.ilykafae.artifactory.models.Config
 import io.github.ilykafae.cafelib.libs.Logger
 import io.github.ilykafae.cafelib.libs.ProfileStore
 import io.github.ilykafae.cafelib.libs.ServerConfigStore
-import net.kyori.adventure.text.Component
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.nio.file.Path
 
-class Artifactory : JavaPlugin() {
+internal class Artifactory : JavaPlugin() {
 
     companion object {
-        internal const val ID = "artifactory"
-        internal const val SPLIT = "::"
+        const val ID = "artifactory"
+        const val SPLIT = "::"
+        const val COMMAND_PREFIX = "§e[§6Artifactory§e]"
 
-        internal lateinit var plugin: JavaPlugin
+        lateinit var plugin: JavaPlugin
 
-        internal val log: java.util.logging.Logger = Bukkit.getLogger()
-        val profileStore: ProfileStore<ArtifactoryProfile> = ProfileStore(
+        val log: java.util.logging.Logger = Bukkit.getLogger()
+        val profileStore = ProfileStore(
             Path.of("artifactory/profiles"),
-            ArtifactoryProfile(),
+            Profile(),
             Logger (log, ID, SPLIT, "profilestore"),
         )
-        val serverConfig: ServerConfigStore<ArtifactoryConfig> = ServerConfigStore(
+        val serverConfig = ServerConfigStore(
             Path.of("artifactory"),
-            ArtifactoryConfig(),
+            Config(),
             Logger (log, ID, SPLIT, "servercfg"),
         )
-    }
-
-    fun sendArtifactActionBar(plr: Player) {
-        val profile: ArtifactoryProfile = profileStore.copy(plr.uniqueId.toString()) ?: return
-
-        if (profile.main != null) {
-            val artifact: Artifact? = ArtifactRegistry.getArtifact(profile.main)
-            if (artifact == null) {
-                plr.sendActionBar(Component.empty())
-                return
-            }
-
-            val abilities: MutableList<ArtifactComponent>? = artifact.artifactComponentManager.get(ArtifactComponentType.ABILITY)
-            if (abilities.isNullOrEmpty()) {
-                plr.sendActionBar(Component.empty())
-                return
-            }
-
-            val bar = abilities.joinToString(" ") { ability ->
-                val index = abilities.indexOf(ability)
-                val cd = profile.cooldowns[artifact.id]?.get(index) ?: 0
-                "§f[${(ability as AbilityComponent).icon}§f] " +
-                        if (cd == 0) "§aReady" else "§f${cd.toTimeString()}"
-            }
-            plr.sendActionBar(Component.text(bar))
-        }
     }
 
     override fun onEnable() {
@@ -74,8 +52,30 @@ class Artifactory : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoin(), this)
         server.pluginManager.registerEvents(PlayerQuit(), this)
         server.pluginManager.registerEvents(PlayerInteract(), this)
+        server.pluginManager.registerEvents(PlayerItemHeld(), this)
+        server.pluginManager.registerEvents(PlayerSwapHands(), this)
+        server.pluginManager.registerEvents(InventoryClick(), this)
+        server.pluginManager.registerEvents(EntityPickupItem(), this)
+        server.pluginManager.registerEvents(PlayerDropItem(), this)
+        server.pluginManager.registerEvents(InventoryItemMove(), this)
+        server.pluginManager.registerEvents(InventoryPickupItem(), this)
+        server.pluginManager.registerEvents(PlayerRespawn(), this)
 
         serverConfig.load()
+
+        // register commands
+        val manager = this.lifecycleManager
+
+        manager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            val registrar = event.registrar()
+
+            registrar.register(
+                "artifactory",
+                "Main command for Artifactory",
+                listOf<String>(),
+                ArtifactCommand()
+            )
+        }
 
         // tasks
         server.scheduler.runTaskTimer(this, Runnable {
@@ -98,7 +98,7 @@ class Artifactory : JavaPlugin() {
 
         server.scheduler.runTaskTimer(this, Runnable {
             Bukkit.getOnlinePlayers().forEach { plr ->
-                sendArtifactActionBar(plr)
+                ArtifactHelper.sendArtifactActionBar(plr)
             }
         }, 0L, 10L)
     }

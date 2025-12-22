@@ -5,14 +5,14 @@ import io.github.ilykafae.artifactory.artifact.Artifact
 import io.github.ilykafae.artifactory.artifact.Inputs
 import io.github.ilykafae.artifactory.artifact.component.ArtifactComponentType
 import io.github.ilykafae.artifactory.artifact.component.components.AbilityComponent
-import io.github.ilykafae.artifactory.models.ArtifactoryProfile
+import io.github.ilykafae.artifactory.models.Profile
 import io.github.ilykafae.cafelib.libs.Helper.toTimeString
 import org.bukkit.entity.Player
 
 object AbilityHelper {
 
     fun useAbility(plr: Player, artifact: Artifact, index: Int) {
-        val profile: ArtifactoryProfile = Artifactory.profileStore.copy(plr.uniqueId.toString()) ?: return
+        val profile: Profile = Artifactory.profileStore.copy(plr.uniqueId.toString()) ?: return
         val abilityComp: AbilityComponent = artifact.artifactComponentManager.get(ArtifactComponentType.ABILITY)?.get(index) as? AbilityComponent ?: return
         if (profile.cooldowns.containsKey(artifact.id)) {
             if (profile.cooldowns[artifact.id]!!.containsKey(index)) {
